@@ -1,0 +1,78 @@
+{
+  "name": "mui-snack-stack",
+  "version": "1.0.0",
+  "description": "Display multiple Mui Snackars one after the other",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "yarn jest --coverage",
+    "lint": "yarn prettier --write . && yarn eslint src --fix",
+    "build": "rm -rf dist && yarn webpack --mode=production",
+    "build-dev": "rm -rf dist && yarn webpack --mode=dev",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "clean": "rm -rf node_modules dist storybook-static",
+    "debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aprax/mui-snack-stack.git"
+  },
+  "author": "Adam Prax",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aprax/mui-snack-stack/issues"
+  },
+  "homepage": "https://github.com/aprax/mui-snack-stack#readme",
+  "peerDependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.2.4",
+    "@mui/material": "^5.2.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+
+  "devDependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.2.4",
+    "@mui/material": "^5.2.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "@babel/core": "^7.16.0",
+    "@storybook/addon-actions": "^6.4.0",
+    "@storybook/addon-essentials": "^6.4.0",
+    "@storybook/addon-links": "^6.4.0",
+    "@storybook/react": "^6.4.0",
+    "@testing-library/dom": "^8.11.1",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.0.2",
+    "@types/react": "^17.0.37",
+    "@types/testing-library__jest-dom": "^5.14.2",
+    "@typescript-eslint/eslint-plugin": "5.9.0",
+    "@typescript-eslint/parser": "^5.9.0",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.3",
+    "eslint": "^8.6.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-react-app": "^7.0.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jest": "^25.3.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.27.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "jest": "^27.3.1",
+    "np": "^7.6.0",
+    "prettier": "2.5.1",
+    "snapshot-diff": "^0.9.0",
+    "ts-jest": "^27.0.7",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.4.4",
+    "webpack": "^5.64.1",
+    "webpack-cli": "^4.9.1"
+  }
+}

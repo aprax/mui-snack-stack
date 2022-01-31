@@ -1,0 +1,15 @@
+.eslintrc.js
+.prettierignore
+.eslintrc.js
+.prettierignore
+.prettierrc.json
+.storybook
+jest.config.js
+src/
+timeout.gif
+tsconfig.json
+webpack.config.js
+yarn.lock
+coverage
+README.md
+LICENCE
