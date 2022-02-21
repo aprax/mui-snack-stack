@@ -20,8 +20,6 @@ type Queue = (
 interface QueueMethods {
 
   messageQueue: Array<Message>;
-  // Dismisses the snackbar after it closes..
-  cancelCurrentSnackbar?: () => void;
   queue: Queue;
 }
 
@@ -29,6 +27,7 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 	const mountedSnackbar: React.FC = () => {
 		// Null means there is no snackar being displayed.
 		const timer = useRef<NodeJS.Timeout>();
+		const cancelCurrentSnackbar = useRef<() => void>()
 		const [waiting, setWaiting] = useState<Promise<void> | null>(null);
 
 		const [isOpen, setIsOpen] = useState(false);
@@ -76,7 +75,7 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 						}, timeout);
 
 						// Used to dismiss the current snackbar when closed.
-						muiSnackStack.cancelCurrentSnackbar = dismissSnackbarResolve;
+						cancelCurrentSnackbar.current = dismissSnackbarResolve
 					});
 					setIsOpen(false);
 				}
@@ -121,8 +120,8 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 				// Removes the timer because the the snackbar has been closed.
 				clearTimeout(timer.current);
 
-				if (muiSnackStack.cancelCurrentSnackbar) {
-					muiSnackStack.cancelCurrentSnackbar();
+				if (cancelCurrentSnackbar.current) {
+					cancelCurrentSnackbar.current();
 				}
 			}
 		};
