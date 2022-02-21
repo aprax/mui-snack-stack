@@ -18,15 +18,13 @@ type Queue = (
 ) => Promise<void>;
 
 interface QueueMethods {
-
-  messageQueue: Array<Message>;
   queue: Queue;
 }
 
 const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 	const mountedSnackbar: React.FC = () => {
-		// Null means there is no snackar being displayed.
 		const timer = useRef<NodeJS.Timeout>();
+		const messageQueue = useRef<Array<Message>>([])
 		const cancelCurrentSnackbar = useRef<() => void>()
 		const [waiting, setWaiting] = useState<Promise<void> | null>(null);
 
@@ -50,8 +48,8 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 
 		const dequeue: () => Promise<void> = () => {
 			const processQueue = async () => {
-				while (muiSnackStack.messageQueue.length) {
-					const nextItem = muiSnackStack.messageQueue.pop() as Message;
+				while (messageQueue.current.length) {
+					const nextItem = messageQueue.current.pop() as Message;
 					const { message, timeout, snackbarOrigin, severity } = nextItem;
 
 					// Waits 200 milliseconds for slide in animation.
@@ -98,7 +96,7 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 			snackbarOrigin = { vertical: "top", horizontal: "right" }
 		): Promise<void> => {
 			// Adds the message to the queue.
-			muiSnackStack.messageQueue.unshift({
+			messageQueue.current.unshift({
 				message,
 				timeout,
 				snackbarOrigin,
@@ -142,7 +140,6 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 
 	return mountedSnackbar({});
 };
-muiSnackStack.messageQueue = [];
 muiSnackStack.queue = (): Promise<void> =>
 	Promise.reject(
 		new Error("MuiSnackStack must be first initialized as <MuiSnackStack /> ")
