@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useState, useRef } from "react";
 import Alert from "@mui/material/Alert";
 import { AlertProps } from "@mui/material/Alert";
 import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
@@ -18,18 +18,14 @@ type Queue = (
 ) => Promise<void>;
 
 interface QueueMethods {
-  // Dismisses the current snackbar after it times out.
-  timer?: NodeJS.Timeout;
-
-  messageQueue: Array<Message>;
-  // Dismisses the snackbar after it closes..
-  cancelCurrentSnackbar?: () => void;
   queue: Queue;
 }
 
 const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 	const mountedSnackbar: React.FC = () => {
-		// Null means there is no snackar being displayed.
+		const timer = useRef<NodeJS.Timeout>();
+		const messageQueue = useRef<Array<Message>>([])
+		const cancelCurrentSnackbar = useRef<() => void>()
 		const [waiting, setWaiting] = useState<Promise<void> | null>(null);
 
 		const [isOpen, setIsOpen] = useState(false);
@@ -52,8 +48,8 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 
 		const dequeue: () => Promise<void> = () => {
 			const processQueue = async () => {
-				while (muiSnackStack.messageQueue.length) {
-					const nextItem = muiSnackStack.messageQueue.pop() as Message;
+				while (messageQueue.current.length) {
+					const nextItem = messageQueue.current.pop() as Message;
 					const { message, timeout, snackbarOrigin, severity } = nextItem;
 
 					// Waits 200 milliseconds for slide in animation.
@@ -71,13 +67,13 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 					// Pauses the loop until the snackbar times out or is closed.
 					await new Promise<void>((dismissSnackbarResolve) => {
 						// Dismisses the snackbar automatically after the timeout.
-						muiSnackStack.timer = setTimeout(() => {
+						timer.current = setTimeout(() => {
 							handleSnackbarClose(undefined);
 							dismissSnackbarResolve();
 						}, timeout);
 
 						// Used to dismiss the current snackbar when closed.
-						muiSnackStack.cancelCurrentSnackbar = dismissSnackbarResolve;
+						cancelCurrentSnackbar.current = dismissSnackbarResolve
 					});
 					setIsOpen(false);
 				}
@@ -100,7 +96,7 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 			snackbarOrigin = { vertical: "top", horizontal: "right" }
 		): Promise<void> => {
 			// Adds the message to the queue.
-			muiSnackStack.messageQueue.unshift({
+			messageQueue.current.unshift({
 				message,
 				timeout,
 				snackbarOrigin,
@@ -118,12 +114,12 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 		};
 
 		const onClose = (): void => {
-			if (muiSnackStack.timer) {
+			if (timer.current) {
 				// Removes the timer because the the snackbar has been closed.
-				clearTimeout(muiSnackStack.timer);
+				clearTimeout(timer.current);
 
-				if (muiSnackStack.cancelCurrentSnackbar) {
-					muiSnackStack.cancelCurrentSnackbar();
+				if (cancelCurrentSnackbar.current) {
+					cancelCurrentSnackbar.current();
 				}
 			}
 		};
@@ -144,7 +140,6 @@ const muiSnackStack: (() => ReactElement) & QueueMethods = () => {
 
 	return mountedSnackbar({});
 };
-muiSnackStack.messageQueue = [];
 muiSnackStack.queue = (): Promise<void> =>
 	Promise.reject(
 		new Error("MuiSnackStack must be first initialized as <MuiSnackStack /> ")
